@@ -167,3 +167,16 @@ The UI needs to adapt based on `habit.type`:
   "updated_at": "2023-12-04T10:00:00Z"
 }
 ```
+
+## 8. New Features Integration
+
+### Profile Management
+*   **Update**: `PATCH /users/profile` with `{ firstName, lastName }`.
+*   **Delete**: `DELETE /users/profile` with `{ password }`. Prompt user for password before calling this.
+
+### Feedback
+*   **Submit**: `POST /feedback` with `{ message }`. Show a success toast "Feedback sent!".
+
+### Data Export
+*   **Request**: `POST /export` with `{ format: 'csv' | 'excel', range: 'week' | '1m' ... }`.
+*   **UI**: Show a "Export Data" button in settings. When clicked, show a modal to select format and range. After success, show "Export started. Check your email."

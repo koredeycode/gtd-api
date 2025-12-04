@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AnalyticsModule } from './analytics/analytics.module';
@@ -6,16 +7,28 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DbModule } from './db/db.module';
+import { ExportModule } from './export/export.module';
+import { FeedbackModule } from './feedback/feedback.module';
 import { SyncModule } from './sync/sync.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DbModule,
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6380,
+      },
+    }),
     AuthModule,
     SyncModule,
     AnalyticsModule,
     CategoriesModule,
+    UsersModule,
+    FeedbackModule,
+    ExportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -63,6 +63,13 @@ export const logs = pgTable('logs', {
   };
 });
 
+export const feedback = pgTable('feedback', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   habits: many(habits),
