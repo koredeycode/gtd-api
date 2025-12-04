@@ -1,15 +1,15 @@
 version: '3.8'
 services:
-  db:
+  db_test:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: gtd_user
       POSTGRES_PASSWORD: gtd_password
-      POSTGRES_DB: gtd_db
+      POSTGRES_DB: gtd_db_test
     ports:
-      - '5433:5432'
+      - '5434:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_test_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  postgres_test_data:
