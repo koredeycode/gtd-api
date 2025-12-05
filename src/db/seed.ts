@@ -13,10 +13,56 @@ const pool = new Pool({
 
 const db = drizzle(pool, { schema });
 
+const HABIT_TEMPLATES: Record<string, any[]> = {
+  'Health & Fitness': [
+    { title: 'Drink 2L Water', type: 'NUMERIC', targetValue: 2000, unit: 'ml' },
+    { title: 'Morning Jog', type: 'DURATION', targetValue: 30, unit: 'mins' },
+    { title: 'No Sugar', type: 'BOOLEAN' },
+    { title: 'Sleep 8 Hours', type: 'DURATION', targetValue: 480, unit: 'mins' },
+    { title: 'Gym Workout', type: 'BOOLEAN' },
+  ],
+  'Work & Career': [
+    { title: 'Deep Work Session', type: 'DURATION', targetValue: 120, unit: 'mins' },
+    { title: 'Clear Inbox', type: 'BOOLEAN' },
+    { title: 'Networking', type: 'TEXT' },
+    { title: 'Learn New Skill', type: 'DURATION', targetValue: 45, unit: 'mins' },
+  ],
+  'Personal Development': [
+    { title: 'Read Book', type: 'DURATION', targetValue: 30, unit: 'mins' },
+    { title: 'Journaling', type: 'TEXT' },
+    { title: 'Meditation', type: 'DURATION', targetValue: 15, unit: 'mins' },
+  ],
+  'Finance': [
+    { title: 'Track Expenses', type: 'BOOLEAN' },
+    { title: 'No Impulse Buy', type: 'BOOLEAN' },
+    { title: 'Savings Contribution', type: 'NUMERIC', targetValue: 100, unit: '$' },
+  ],
+  'Social & Relationships': [
+    { title: 'Call Parents', type: 'BOOLEAN' },
+    { title: 'Date Night', type: 'BOOLEAN' },
+    { title: 'Hangout with Friends', type: 'TEXT' },
+  ],
+  'Mindfulness & Spirituality': [
+    { title: 'Morning Gratitude', type: 'TEXT' },
+    { title: 'Prayer/Meditation', type: 'DURATION', targetValue: 20, unit: 'mins' },
+  ],
+  'Hobbies & Creativity': [
+    { title: 'Play Guitar', type: 'DURATION', targetValue: 30, unit: 'mins' },
+    { title: 'Painting', type: 'BOOLEAN' },
+    { title: 'Coding Side Project', type: 'DURATION', targetValue: 60, unit: 'mins' },
+  ],
+  'Home & Environment': [
+    { title: 'Tidy Room', type: 'BOOLEAN' },
+    { title: 'Water Plants', type: 'BOOLEAN' },
+    { title: 'Laundry', type: 'BOOLEAN' },
+  ],
+};
+
 async function seed() {
-  console.log('Seeding database...');
+  console.log('Seeding database with realistic data...');
 
   // Cleanup
+  await db.delete(schema.feedback);
   await db.delete(schema.logs);
   await db.delete(schema.habits);
   await db.delete(schema.categories);
@@ -24,7 +70,7 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash('password123', 10);
 
-  // Create 3 Users
+  // Create Users
   const usersData = [
     { email: 'user1@example.com', firstName: 'Alice', lastName: 'Smith' },
     { email: 'user2@example.com', firstName: 'Bob', lastName: 'Jones' },
@@ -41,7 +87,7 @@ async function seed() {
 
     console.log(`Created user: ${user.email}`);
 
-    // Create Predefined Categories (if not exist)
+    // Create Predefined Categories
     const predefinedCategories = [
       { name: 'Health & Fitness', color: '#FF5733' },
       { name: 'Work & Career', color: '#33FF57' },
@@ -54,53 +100,50 @@ async function seed() {
     ];
 
     const categories = await db.insert(schema.categories).values(predefinedCategories).onConflictDoNothing().returning();
-    // If returning is empty (conflict), fetch them
     const allCategories = await db.select().from(schema.categories);
 
-    // Create 2-3 Habits per category for this user
+    // Create Habits for this user
     for (const cat of allCategories) {
-      const numHabits = faker.number.int({ min: 2, max: 3 });
-      const habitsData = Array.from({ length: numHabits }).map(() => {
-        const type = faker.helpers.arrayElement(['BOOLEAN', 'NUMERIC', 'TEXT', 'RATING', 'DURATION'] as const);
-        let targetValue: number | null = null;
-        if (type === 'NUMERIC') targetValue = faker.number.int({ min: 10, max: 100 });
-        if (type === 'RATING') targetValue = 10;
-        if (type === 'DURATION') targetValue = faker.number.int({ min: 15, max: 120 }); // minutes
+      const templates = HABIT_TEMPLATES[cat.name] || [];
+      // Pick 2-4 random templates for this category
+      const selectedTemplates = faker.helpers.arrayElements(templates, faker.number.int({ min: 2, max: 4 }));
 
-        return {
+      for (const template of selectedTemplates) {
+        const [habit] = await db.insert(schema.habits).values({
           userId: user.id,
           categoryId: cat.id,
-          title: faker.lorem.words(3),
-          type,
-          targetValue,
+          title: template.title,
+          type: template.type,
+          targetValue: template.targetValue,
           frequencyJson: { type: 'daily' },
-        };
-      });
+        }).returning();
 
-      const habits = await db.insert(schema.habits).values(habitsData).returning();
-
-      // Create Logs for last 30 days
-      for (const habit of habits) {
+        // Generate Logs for 6-12 months
+        const daysToLog = faker.number.int({ min: 180, max: 365 });
         const logsData: any[] = [];
-        for (let i = 0; i < 30; i++) {
+
+        for (let i = 0; i < daysToLog; i++) {
           const date = new Date();
           date.setDate(date.getDate() - i);
           const dateStr = date.toISOString().split('T')[0];
 
-          // 70% chance of logging
+          // 60-80% consistency
           if (faker.datatype.boolean(0.7)) {
             let valNumeric: number | null = null;
             let valBool: boolean | null = null;
             let valText: string | null = null;
 
             if (habit.type === 'NUMERIC') {
-              valNumeric = faker.number.int({ min: 0, max: (habit.targetValue || 100) + 20 });
+              // Variance around target
+              const variance = faker.number.int({ min: -20, max: 20 });
+              valNumeric = Math.max(0, (habit.targetValue || 100) + variance);
             } else if (habit.type === 'BOOLEAN') {
-              valBool = faker.datatype.boolean();
+              valBool = true; // Usually if they log, they did it. Or could be mixed.
             } else if (habit.type === 'RATING') {
-              valNumeric = faker.number.int({ min: 1, max: 10 });
+              valNumeric = faker.number.int({ min: 3, max: 10 });
             } else if (habit.type === 'DURATION') {
-              valNumeric = faker.number.int({ min: 0, max: (habit.targetValue || 60) + 30 });
+              const variance = faker.number.int({ min: -10, max: 30 });
+              valNumeric = Math.max(5, (habit.targetValue || 30) + variance);
             } else {
               valText = faker.lorem.sentence();
             }
@@ -115,6 +158,8 @@ async function seed() {
             });
           }
         }
+
+        // Batch insert logs (chunking to avoid query size limits if needed, but 365 is fine)
         if (logsData.length > 0) {
           await db.insert(schema.logs).values(logsData);
         }

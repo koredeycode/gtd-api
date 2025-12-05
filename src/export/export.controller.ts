@@ -5,10 +5,10 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ExportService } from './export.service';
 
 export class ExportDataDto {
-  @ApiProperty({ example: 'csv', enum: ['csv', 'excel'] })
+  @ApiProperty({ example: 'excel', enum: ['excel'] })
   @IsNotEmpty()
-  @IsIn(['csv', 'excel'])
-  format!: 'csv' | 'excel';
+  @IsIn(['excel'])
+  format!: 'excel';
 
   @ApiProperty({ example: 'week', enum: ['week', '1m', '3m', '6m', '1y', 'all'] })
   @IsNotEmpty()

@@ -12,11 +12,9 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),
-}, (table) => {
-  return {
-    emailIdx: index('email_idx').on(table.email),
-  };
-});
+}, (table) => [
+  index('email_idx').on(table.email),
+]);
 
 export const categories = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -38,12 +36,10 @@ export const habits = pgTable('habits', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),
-}, (table) => {
-  return {
-    userIdIdx: index('habits_user_id_idx').on(table.userId),
-    categoryIdIdx: index('habits_category_id_idx').on(table.categoryId),
-  };
-});
+}, (table) => [
+  index('habits_user_id_idx').on(table.userId),
+  index('habits_category_id_idx').on(table.categoryId),
+]);
 
 export const logs = pgTable('logs', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -56,12 +52,10 @@ export const logs = pgTable('logs', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),
-}, (table) => {
-  return {
-    userIdIdx: index('logs_user_id_idx').on(table.userId),
-    habitIdIdx: index('logs_habit_id_idx').on(table.habitId),
-  };
-});
+}, (table) => [
+  index('logs_user_id_idx').on(table.userId),
+  index('logs_habit_id_idx').on(table.habitId),
+]);
 
 export const feedback = pgTable('feedback', {
   id: uuid('id').defaultRandom().primaryKey(),
