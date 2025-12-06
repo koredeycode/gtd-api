@@ -28,8 +28,6 @@ export class SyncService {
              userId,
              categoryId: item.category_id,
              title: item.title,
-             type: item.type,
-             targetValue: item.target_value,
              frequencyJson: item.frequency_json,
              createdAt: new Date(), // Should ideally be from client or keep existing? Client doesn't send createdAt usually.
              updatedAt: new Date(),
@@ -38,8 +36,6 @@ export class SyncService {
              set: {
                categoryId: item.category_id,
                title: item.title,
-               type: item.type,
-               targetValue: item.target_value,
                frequencyJson: item.frequency_json,
                updatedAt: new Date(),
              }
@@ -64,9 +60,8 @@ export class SyncService {
              habitId: item.habit_id,
              userId,
              date: item.date,
-             valNumeric: item.val_numeric,
-             valText: item.val_text,
-             valBool: item.val_bool,
+             text: item.val_text,
+             value: item.val_bool,
              createdAt: new Date(),
              updatedAt: new Date(),
            }).onConflictDoUpdate({
@@ -74,9 +69,8 @@ export class SyncService {
              set: {
                habitId: item.habit_id,
                date: item.date,
-               valNumeric: item.val_numeric,
-               valText: item.val_text,
-               valBool: item.val_bool,
+               text: item.val_text,
+               value: item.val_bool,
                updatedAt: new Date(),
              }
            });

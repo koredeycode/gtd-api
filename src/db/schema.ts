@@ -1,7 +1,6 @@
 import { relations } from 'drizzle-orm';
-import { boolean, date, index, json, pgEnum, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, date, index, json, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-export const habitTypeEnum = pgEnum('habit_type', ['BOOLEAN', 'NUMERIC', 'TEXT', 'RATING', 'DURATION']);
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -30,8 +29,6 @@ export const habits = pgTable('habits', {
   userId: uuid('user_id').references(() => users.id).notNull(),
   categoryId: uuid('category_id').references(() => categories.id).notNull(),
   title: text('title').notNull(),
-  type: habitTypeEnum('type').notNull(),
-  targetValue: real('target_value'),
   frequencyJson: json('frequency_json').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -46,9 +43,8 @@ export const logs = pgTable('logs', {
   habitId: uuid('habit_id').references(() => habits.id).notNull(),
   userId: uuid('user_id').references(() => users.id).notNull(), // Denormalized
   date: date('date').notNull(),
-  valNumeric: real('val_numeric'),
-  valText: text('val_text'),
-  valBool: boolean('val_bool'),
+  text: text('text'),
+  value: boolean('value'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   deletedAt: timestamp('deleted_at'),

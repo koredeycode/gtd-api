@@ -68,19 +68,10 @@ export class AnalyticsService {
         const habitLogs = userLogs.filter(l => l.habitId === habit.id);
         let isCompleted = false;
 
-        if (habit.type === 'BOOLEAN') {
-          isCompleted = habitLogs.some(l => l.valBool === true);
-        } else if (habit.type === 'NUMERIC') {
-          isCompleted = habitLogs.some(l => (l.valNumeric || 0) >= (habit.targetValue || 0));
-        } else if (habit.type === 'RATING') {
-          // For rating, we might consider "completed" if a rating exists, or if it's above a threshold.
-          // Let's assume simply logging a rating counts as completion for now.
-          isCompleted = habitLogs.some(l => l.valNumeric !== null);
-        } else if (habit.type === 'DURATION') {
-          isCompleted = habitLogs.some(l => (l.valNumeric || 0) >= (habit.targetValue || 0));
-        } else {
-           isCompleted = habitLogs.length > 0;
-        }
+        // Since all habits are now boolean, checks are simple:
+        // if there is a log with value === true, it is completed.
+        // Assuming logs usually mean completion in this new model.
+        isCompleted = habitLogs.some(l => l.value === true);
 
         if (isCompleted) {
           totalCompletion += 1;

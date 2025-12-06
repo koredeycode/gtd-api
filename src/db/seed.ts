@@ -15,46 +15,46 @@ const db = drizzle(pool, { schema });
 
 const HABIT_TEMPLATES: Record<string, any[]> = {
   'Health & Fitness': [
-    { title: 'Drink 2L Water', type: 'NUMERIC', targetValue: 2000, unit: 'ml' },
-    { title: 'Morning Jog', type: 'DURATION', targetValue: 30, unit: 'mins' },
-    { title: 'No Sugar', type: 'BOOLEAN' },
-    { title: 'Sleep 8 Hours', type: 'DURATION', targetValue: 480, unit: 'mins' },
-    { title: 'Gym Workout', type: 'BOOLEAN' },
+    { title: 'Drink 2L Water' },
+    { title: 'Morning Jog' },
+    { title: 'No Sugar' },
+    { title: 'Sleep 8 Hours' },
+    { title: 'Gym Workout' },
   ],
   'Work & Career': [
-    { title: 'Deep Work Session', type: 'DURATION', targetValue: 120, unit: 'mins' },
-    { title: 'Clear Inbox', type: 'BOOLEAN' },
-    { title: 'Networking', type: 'TEXT' },
-    { title: 'Learn New Skill', type: 'DURATION', targetValue: 45, unit: 'mins' },
+    { title: 'Deep Work Session' },
+    { title: 'Clear Inbox' },
+    { title: 'Networking' },
+    { title: 'Learn New Skill' },
   ],
   'Personal Development': [
-    { title: 'Read Book', type: 'DURATION', targetValue: 30, unit: 'mins' },
-    { title: 'Journaling', type: 'TEXT' },
-    { title: 'Meditation', type: 'DURATION', targetValue: 15, unit: 'mins' },
+    { title: 'Read Book' },
+    { title: 'Journaling' },
+    { title: 'Meditation' },
   ],
   'Finance': [
-    { title: 'Track Expenses', type: 'BOOLEAN' },
-    { title: 'No Impulse Buy', type: 'BOOLEAN' },
-    { title: 'Savings Contribution', type: 'NUMERIC', targetValue: 100, unit: '$' },
+    { title: 'Track Expenses' },
+    { title: 'No Impulse Buy' },
+    { title: 'Savings Contribution' },
   ],
   'Social & Relationships': [
-    { title: 'Call Parents', type: 'BOOLEAN' },
-    { title: 'Date Night', type: 'BOOLEAN' },
-    { title: 'Hangout with Friends', type: 'TEXT' },
+    { title: 'Call Parents' },
+    { title: 'Date Night' },
+    { title: 'Hangout with Friends' },
   ],
   'Mindfulness & Spirituality': [
-    { title: 'Morning Gratitude', type: 'TEXT' },
-    { title: 'Prayer/Meditation', type: 'DURATION', targetValue: 20, unit: 'mins' },
+    { title: 'Morning Gratitude' },
+    { title: 'Prayer/Meditation' },
   ],
   'Hobbies & Creativity': [
-    { title: 'Play Guitar', type: 'DURATION', targetValue: 30, unit: 'mins' },
-    { title: 'Painting', type: 'BOOLEAN' },
-    { title: 'Coding Side Project', type: 'DURATION', targetValue: 60, unit: 'mins' },
+    { title: 'Play Guitar' },
+    { title: 'Painting' },
+    { title: 'Coding Side Project' },
   ],
   'Home & Environment': [
-    { title: 'Tidy Room', type: 'BOOLEAN' },
-    { title: 'Water Plants', type: 'BOOLEAN' },
-    { title: 'Laundry', type: 'BOOLEAN' },
+    { title: 'Tidy Room' },
+    { title: 'Water Plants' },
+    { title: 'Laundry' },
   ],
 };
 
@@ -113,8 +113,6 @@ async function seed() {
           userId: user.id,
           categoryId: cat.id,
           title: template.title,
-          type: template.type,
-          targetValue: template.targetValue,
           frequencyJson: { type: 'daily' },
         }).returning();
 
@@ -129,32 +127,20 @@ async function seed() {
 
           // 60-80% consistency
           if (faker.datatype.boolean(0.7)) {
-            let valNumeric: number | null = null;
-            let valBool: boolean | null = null;
-            let valText: string | null = null;
+            const value = true;
+            let text: string | null = null;
 
-            if (habit.type === 'NUMERIC') {
-              // Variance around target
-              const variance = faker.number.int({ min: -20, max: 20 });
-              valNumeric = Math.max(0, (habit.targetValue || 100) + variance);
-            } else if (habit.type === 'BOOLEAN') {
-              valBool = true; // Usually if they log, they did it. Or could be mixed.
-            } else if (habit.type === 'RATING') {
-              valNumeric = faker.number.int({ min: 3, max: 10 });
-            } else if (habit.type === 'DURATION') {
-              const variance = faker.number.int({ min: -10, max: 30 });
-              valNumeric = Math.max(5, (habit.targetValue || 30) + variance);
-            } else {
-              valText = faker.lorem.sentence();
+            // Occasionally add a text note
+            if (faker.datatype.boolean(0.1)) {
+                 text = faker.lorem.sentence();
             }
 
             logsData.push({
               habitId: habit.id,
               userId: user.id,
               date: dateStr,
-              valNumeric,
-              valBool,
-              valText,
+              value,
+              text,
             });
           }
         }

@@ -26,6 +26,7 @@ export class ExportProcessor {
       return;
     }
 
+
     // 1. Fetch Data
     const allCategories = await this.db.select().from(categories);
     const userHabits = await this.db.select().from(habits).where(eq(habits.userId, userId));
@@ -42,8 +43,8 @@ export class ExportProcessor {
             if (!logsMap.has(log.habitId)) {
                 logsMap.set(log.habitId, new Map());
             }
-            const habit = userHabits.find(h => h.id === log.habitId);
-            const val = this.formatLogValue(log, habit?.type);
+            // Removed habit lookup as type is no longer needed
+            const val = this.formatLogValue(log);
             logsMap.get(log.habitId)?.set(log.date, val);
 
             const logDate = new Date(log.date);
@@ -188,15 +189,10 @@ export class ExportProcessor {
     console.log(`Sending export email to user... (Mocked)`);
   }
 
-  private formatLogValue(log: any, type: string | undefined) {
-    if (!type) return '';
-    switch (type) {
-      case 'BOOLEAN': return log.valBool ? '✓' : '';
-      case 'NUMERIC': return log.valNumeric?.toString() || '';
-      case 'TEXT': return log.valText || '';
-      case 'RATING': return log.valNumeric ? `${log.valNumeric}` : '';
-      case 'DURATION': return log.valNumeric ? `${log.valNumeric}m` : '';
-      default: return '';
+  private formatLogValue(log: any) {
+    if (log.value) {
+        return log.text ? `✓ (${log.text})` : '✓';
     }
+    return ''; // Only showing completed habits
   }
 }
