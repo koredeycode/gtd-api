@@ -22,8 +22,8 @@ The core of the app is the offline-first capability. You need a local database (
 
 ### Data Models
 Replicate the backend schema locally:
-*   **Habit**: `id` (UUID), `user_id`, `category_id`, `title`, `type` (BOOLEAN, NUMERIC, TEXT, RATING, DURATION), `target_value`, `frequency_json`, `updated_at`, `deleted_at`.
-*   **Log**: `id` (UUID), `habit_id`, `user_id`, `date` (YYYY-MM-DD), `val_numeric`, `val_bool`, `val_text`, `updated_at`, `deleted_at`.
+*   **Habit**: `id` (UUID), `user_id`, `category_id`, `title`, `frequency_json`, `updated_at`, `deleted_at`.
+*   **Log**: `id` (UUID), `habit_id`, `user_id`, `date` (YYYY-MM-DD), `value` (BOOLEAN), `text` (TEXT), `updated_at`, `deleted_at`.
 
 ### Sync Logic (The "Sync Loop")
 Implement a sync function that runs periodically (e.g., every minute) or on app focus/online status change.
@@ -54,14 +54,10 @@ Implement a sync function that runs periodically (e.g., every minute) or on app 
 *   **Display**: Use a charting library (e.g., `react-native-chart-kit`, `recharts`) to display the data.
 *   **Data Format**: The API returns `{ labels: string[], data: number[] }` where `data` is the completion percentage (0-100).
 
-## 5. Habit Types Handling
-The UI needs to adapt based on `habit.type`:
-
-*   **BOOLEAN**: Show a checkbox or toggle.
-*   **NUMERIC**: Show a number input or stepper.
-*   **TEXT**: Show a text input area.
-*   **RATING**: Show a 1-10 star/slider rating.
-*   **DURATION**: Show a timer or time picker (minutes).
+## 5. Habit Handling
+All habits are now simple "Done / Not Done" checks.
+*   **UI**: Show a checkbox or toggle for every habit.
+*   **Optional Text**: Users can optionally add a note (text) to their log entry.
 
 ## 6. Error Handling
 *   **401 Unauthorized**: Redirect to Login.
@@ -80,91 +76,28 @@ The UI needs to adapt based on `habit.type`:
 }
 ```
 
-### Habit Examples
-
-**1. Boolean Habit (e.g., "Morning Jog")**
+### Habit Example
 ```json
 {
   "id": "h1...",
   "user_id": "u1...",
   "category_id": "c1...",
   "title": "Morning Jog",
-  "type": "BOOLEAN",
-  "target_value": null,
   "frequency_json": { "type": "daily" },
   "updated_at": "2023-12-04T08:00:00Z"
 }
 ```
 
-**2. Numeric Habit (e.g., "Drink Water")**
-```json
-{
-  "id": "h2...",
-  "user_id": "u1...",
-  "category_id": "c1...",
-  "title": "Drink Water",
-  "type": "NUMERIC",
-  "target_value": 2000, // mL
-  "frequency_json": { "type": "daily" },
-  "updated_at": "2023-12-04T08:00:00Z"
-}
-```
-
-**3. Rating Habit (e.g., "Mood")**
-```json
-{
-  "id": "h3...",
-  "user_id": "u1...",
-  "category_id": "c3...",
-  "title": "Daily Mood",
-  "type": "RATING",
-  "target_value": 10, // Max rating
-  "frequency_json": { "type": "daily" },
-  "updated_at": "2023-12-04T08:00:00Z"
-}
-```
-
-**4. Duration Habit (e.g., "Meditation")**
-```json
-{
-  "id": "h4...",
-  "user_id": "u1...",
-  "category_id": "c6...",
-  "title": "Meditation",
-  "type": "DURATION",
-  "target_value": 30, // Minutes
-  "frequency_json": { "type": "daily" },
-  "updated_at": "2023-12-04T08:00:00Z"
-}
-```
-
-### Log Examples
-
-**1. Log for Boolean Habit**
+### Log Example
 ```json
 {
   "id": "l1...",
   "habit_id": "h1...",
   "user_id": "u1...",
   "date": "2023-12-04",
-  "val_bool": true,
-  "val_numeric": null,
-  "val_text": null,
+  "value": true,
+  "text": "Felt great today!", // Optional
   "updated_at": "2023-12-04T09:00:00Z"
-}
-```
-
-**2. Log for Numeric/Rating/Duration Habit**
-```json
-{
-  "id": "l2...",
-  "habit_id": "h2...",
-  "user_id": "u1...",
-  "date": "2023-12-04",
-  "val_bool": null,
-  "val_numeric": 1500, // The value recorded (mL, Rating, or Minutes)
-  "val_text": null,
-  "updated_at": "2023-12-04T10:00:00Z"
 }
 ```
 
