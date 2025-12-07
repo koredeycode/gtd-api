@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { DbModule } from './db/db.module';
 import { ExportModule } from './export/export.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { HabitsModule } from './habits/habits.module';
 import { SyncModule } from './sync/sync.module';
 import { UsersModule } from './users/users.module';
 
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     FeedbackModule,
     ExportModule,
+    HabitsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -15,6 +15,17 @@ The API uses JWT (JSON Web Tokens) for authentication.
 The app uses global, predefined categories.
 
 *   **Fetch**: On app startup (or after login), call `GET /categories`.
+*   **Response**:
+    ```json
+    [
+      {
+        "id": "c1b2a3e4-...",
+        "name": "Health & Fitness",
+        "color": "#FF5733"
+      },
+      ...
+    ]
+    ```
 *   **Store**: Save these categories locally (e.g., in a local SQLite DB or Redux/Context state). You will need the `id` of these categories when creating habits.
 
 ## 3. Offline-First Sync Engine
@@ -113,3 +124,33 @@ All habits are now simple "Done / Not Done" checks.
 ### Data Export
 *   **Request**: `POST /export` with `{ format: 'csv' | 'excel', range: 'week' | '1m' ... }`.
 *   **UI**: Show a "Export Data" button in settings. When clicked, show a modal to select format and range. After success, show "Export started. Check your email."
+
+### AI Habit Generation
+*   **Generate**: `POST /habits/generate`
+*   **Payload**:
+    ```json
+    {
+      "goal": "Improve sleep quality",
+      "categories": ["Health", "Mindfulness"]
+    }
+    ```
+*   **Response**:
+    ```json
+    {
+      "categories": [
+        {
+          "name": "Health",
+          "habits": [
+            { "title": "No screens 1 hour before bed" }
+          ]
+        },
+        ...
+      ]
+    }
+    ```
+*   **UI**:
+    1.  Show a "Generate with AI" button in the Create Habit flow.
+    2.  Open a modal or new screen asking for "Goal" (text input) and "Categories" (multi-select from existing categories).
+    3.  Call the endpoint.
+    4.  Display the results.
+    5.  Allow user to select which generated habits to add to their list.
