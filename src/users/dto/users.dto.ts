@@ -19,3 +19,17 @@ export class DeleteProfileDto {
   @IsString()
   password!: string;
 }
+
+export class UserProfileResponseDto {
+  @ApiProperty({ example: 'uuid-string' })
+  id: string;
+
+  @ApiProperty({ example: 'user@example.com' })
+  email: string;
+
+  @ApiProperty({ example: 'John', nullable: true })
+  firstName: string | null;
+
+  @ApiProperty({ example: 'Doe', nullable: true })
+  lastName: string | null;
+}

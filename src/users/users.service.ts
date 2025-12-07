@@ -13,6 +13,21 @@ export class UsersService {
     @Inject(DB_CONNECTION) private db: NodePgDatabase<typeof schema>,
   ) {}
 
+  async getProfile(userId: string) {
+    const [user] = await this.db.select().from(users).where(eq(users.id, userId));
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+  }
+
   async updateProfile(userId: string, dto: UpdateProfileDto) {
     const [updatedUser] = await this.db.update(users)
       .set({

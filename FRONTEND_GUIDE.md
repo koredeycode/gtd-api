@@ -115,7 +115,8 @@ All habits are now simple "Done / Not Done" checks.
 ## 8. New Features Integration
 
 ### Profile Management
-*   **Update**: `PATCH /users/profile` with `{ firstName, lastName }`.
+*   **Get**: `GET /users/profile`. Returns `{ id, email, firstName, lastName }`.
+*   **Update**: `PATCH /users/profile` with `{ firstName, lastName }`. Returns updated user object.
 *   **Delete**: `DELETE /users/profile` with `{ password }`. Prompt user for password before calling this.
 
 ### Feedback
@@ -127,47 +128,62 @@ All habits are now simple "Done / Not Done" checks.
 
 ### AI Habit Generation
 *   **Generate**: `POST /habits/generate`
-*   **Payload**:
+*   **Payload** (`GenerateHabitsDto`):
     ```json
     {
-      "goal": "Improve sleep quality",
-      "categories": ["Health", "Mindfulness"]
+      "goal": "Improve physical health",
+      "categories": ["Fitness", "Nutrition"]
     }
     ```
-*   **Response**:
+*   **Response** (`GeneratedHabitsResponseDto`):
     ```json
     {
       "categories": [
         {
-          "name": "Health",
+          "name": "Fitness",
           "habits": [
-            { "title": "No screens 1 hour before bed" }
+            { "title": "Morning Jog" },
+            { "title": "Strength Training" }
           ]
         },
         ...
       ]
     }
     ```
-*   **UI**:
-    1.  Show a "Generate with AI" button in the Create Habit flow.
-    2.  Open a modal or new screen asking for "Goal" (text input) and "Categories" (multi-select from existing categories).
-    3.  Call the endpoint.
-    4.  Display the results.
-    5.  Allow user to select which generated habits to add to their list.
-    6.  Call `POST /habits/bulk` with the selected habits.
+*   **UI Workflow**:
+    1.  Show a "Generate with AI" button.
+    2.  Collect "Goal" and "Categories" from user.
+    3.  Call `POST /habits/generate`.
+    4.  Display results to user for selection.
+    5.  Call `POST /habits/bulk` with selected items.
 
 ### Bulk Create Habits
 *   **Create**: `POST /habits/bulk`
-*   **Payload**:
+*   **Payload** (`CreateBulkHabitsDto`):
     ```json
     {
       "categories": [
         {
           "categoryId": "c1b2a3e4-...",
-          "habits": ["No screens 1 hour before bed"]
+          "habits": ["Morning Jog", "Drink Water"]
         }
       ]
     }
     ```
-*   **Response**: List of created habits objects.
+*   **Response** (`HabitResponseDto[]`): Returns an array of created habit objects.
+    ```json
+    [
+      {
+        "id": "h1...",
+        "userId": "u1...",
+        "categoryId": "c1...",
+        "title": "Morning Jog",
+        "frequencyJson": { "type": "daily", "days": [...] },
+        "createdAt": "2023-12-07T10:00:00Z",
+        "updatedAt": "2023-12-07T10:00:00Z",
+        "deletedAt": null
+      },
+      ...
+    ]
+    ```
 
