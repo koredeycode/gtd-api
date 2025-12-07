@@ -154,3 +154,20 @@ All habits are now simple "Done / Not Done" checks.
     3.  Call the endpoint.
     4.  Display the results.
     5.  Allow user to select which generated habits to add to their list.
+    6.  Call `POST /habits/bulk` with the selected habits.
+
+### Bulk Create Habits
+*   **Create**: `POST /habits/bulk`
+*   **Payload**:
+    ```json
+    {
+      "categories": [
+        {
+          "categoryId": "c1b2a3e4-...",
+          "habits": ["No screens 1 hour before bed"]
+        }
+      ]
+    }
+    ```
+*   **Response**: List of created habits objects.
+

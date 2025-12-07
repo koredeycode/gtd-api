@@ -1,6 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { DB_CONNECTION } from '../db/db.module';
+import * as schema from '../db/schema';
+import { CreateBulkHabitsDto } from './dto/create-bulk-habits.dto';
 
 export interface GeneratedHabit {
   title: string;
@@ -19,7 +23,10 @@ export interface GeneratedHabitsResponse {
 export class HabitsService {
   private genAI: GoogleGenerativeAI;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @Inject(DB_CONNECTION) private db: NodePgDatabase<typeof schema>,
+  ) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
     if (apiKey) {
       this.genAI = new GoogleGenerativeAI(apiKey);
@@ -77,5 +84,26 @@ export class HabitsService {
       console.error('Error generating habits:', error);
       throw new InternalServerErrorException('Failed to generate habits');
     }
+  }
+
+  async createBulkHabits(userId: string, dto: CreateBulkHabitsDto) {
+    const createdHabits: (typeof schema.habits.$inferSelect)[] = [];
+
+    for (const catData of dto.categories) {
+      for (const title of catData.habits) {
+        const [habit] = await this.db
+          .insert(schema.habits)
+          .values({
+            userId,
+            categoryId: catData.categoryId,
+            title,
+            frequencyJson: { type: 'daily', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+          })
+          .returning();
+        createdHabits.push(habit);
+      }
+    }
+
+    return createdHabits;
   }
 }
