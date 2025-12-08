@@ -1,5 +1,11 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FeedbackService } from './feedback.service';
@@ -23,6 +29,10 @@ export class FeedbackController {
   @ApiResponse({ status: 201, description: 'Feedback submitted successfully.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   create(@Request() req: any, @Body() dto: CreateFeedbackDto) {
-    return this.feedbackService.createFeedback(req.user.userId, req.user.email, dto.message);
+    return this.feedbackService.createFeedback(
+      req.user.id,
+      req.user.email,
+      dto.message,
+    );
   }
 }

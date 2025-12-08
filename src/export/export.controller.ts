@@ -1,5 +1,11 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ExportService } from './export.service';
@@ -10,7 +16,10 @@ export class ExportDataDto {
   @IsIn(['excel'])
   format!: 'excel';
 
-  @ApiProperty({ example: 'week', enum: ['week', '1m', '3m', '6m', '1y', 'all'] })
+  @ApiProperty({
+    example: 'week',
+    enum: ['week', '1m', '3m', '6m', '1y', 'all'],
+  })
   @IsNotEmpty()
   @IsString()
   range!: string;
@@ -28,6 +37,6 @@ export class ExportController {
   @ApiResponse({ status: 202, description: 'Export request accepted.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   requestExport(@Request() req: any, @Body() dto: ExportDataDto) {
-    return this.exportService.requestExport(req.user.userId, dto.format, dto.range);
+    return this.exportService.requestExport(req.user.id, dto.format, dto.range);
   }
 }

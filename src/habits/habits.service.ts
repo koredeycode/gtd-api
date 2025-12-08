@@ -1,5 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DB_CONNECTION } from '../db/db.module';
@@ -33,14 +37,19 @@ export class HabitsService {
     }
   }
 
-  async generateHabits(goal: string, categories: string[]): Promise<GeneratedHabitsResponse> {
+  async generateHabits(
+    goal: string,
+    categories: string[],
+  ): Promise<GeneratedHabitsResponse> {
     if (!this.genAI) {
       const apiKey = this.configService.get<string>('GEMINI_API_KEY');
-      
+
       if (!apiKey) {
-        throw new InternalServerErrorException('GEMINI_API_KEY is not configured');
+        throw new InternalServerErrorException(
+          'GEMINI_API_KEY is not configured',
+        );
       }
-       this.genAI = new GoogleGenerativeAI(apiKey);
+      this.genAI = new GoogleGenerativeAI(apiKey);
     }
 
     const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
@@ -74,8 +83,6 @@ export class HabitsService {
       const response = result.response;
       let text = response.text();
 
-      
-
       // Clean up markdown code blocks if present (just in case)
       text = text.replace(/^```json\s*/, '').replace(/\s*```$/, '');
 
@@ -87,6 +94,7 @@ export class HabitsService {
   }
 
   async createBulkHabits(userId: string, dto: CreateBulkHabitsDto) {
+    console.log('Creating bulk habits for user:', userId, 'with data:', dto);
     const createdHabits: (typeof schema.habits.$inferSelect)[] = [];
 
     for (const catData of dto.categories) {
@@ -97,7 +105,10 @@ export class HabitsService {
             userId,
             categoryId: catData.categoryId,
             title,
-            frequencyJson: { type: 'daily', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+            frequencyJson: {
+              type: 'daily',
+              days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            },
           })
           .returning();
         createdHabits.push(habit);

@@ -120,14 +120,16 @@ export class SyncPayloadDto {
   logs!: SyncLogsDto;
 }
 
-export class SyncInputDto {
-  @ApiProperty({ example: 1701700000, description: 'Timestamp of last successful pull (seconds)' })
-  @IsNumber()
-  last_pulled_at!: number;
-
+export class PushInputDto {
   @ApiProperty({ type: SyncPayloadDto })
   @IsObject()
   @ValidateNested()
   @Type(() => SyncPayloadDto)
   changes!: SyncPayloadDto;
+}
+
+export class PullInputDto {
+  @ApiProperty({ example: 1701700000, description: 'Timestamp of last successful pull (seconds)' })
+  @IsNumber()
+  last_pulled_at!: number;
 }

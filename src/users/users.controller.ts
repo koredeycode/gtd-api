@@ -1,7 +1,24 @@
-import { Body, Controller, Delete, Get, Patch, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { DeleteProfileDto, UpdateProfileDto, UserProfileResponseDto } from './dto/users.dto';
+import {
+  DeleteProfileDto,
+  UpdateProfileDto,
+  UserProfileResponseDto,
+} from './dto/users.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
@@ -19,7 +36,7 @@ export class UsersController {
     type: UserProfileResponseDto,
   })
   getProfile(@Request() req: any) {
-    return this.usersService.getProfile(req.user.userId);
+    return this.usersService.getProfile(req.user.id);
   }
 
   @Patch('profile')
@@ -32,15 +49,18 @@ export class UsersController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   updateProfile(@Request() req: any, @Body() dto: UpdateProfileDto) {
-    return this.usersService.updateProfile(req.user.userId, dto);
+    return this.usersService.updateProfile(req.user.id, dto);
   }
 
   @Delete('profile')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete user profile (Soft delete)' })
   @ApiResponse({ status: 200, description: 'Profile deleted successfully.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized or Invalid password.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized or Invalid password.',
+  })
   deleteProfile(@Request() req: any, @Body() dto: DeleteProfileDto) {
-    return this.usersService.deleteProfile(req.user.userId, dto.password);
+    return this.usersService.deleteProfile(req.user.id, dto.password);
   }
 }
