@@ -11,7 +11,7 @@ import { SyncService } from './sync.service';
 
 @ApiTags('Sync')
 @ApiBearerAuth()
-@Controller('api/v1/sync')
+@Controller('sync')
 export class SyncController {
   constructor(private readonly syncService: SyncService) {}
 

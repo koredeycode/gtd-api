@@ -63,8 +63,8 @@ export class SyncService {
               habitId: item.habit_id,
               userId,
               date: item.date,
-              text: item.val_text,
-              value: item.val_bool,
+              text: item.text,
+              value: item.value,
               createdAt: new Date(),
               updatedAt: new Date(),
             })
@@ -73,8 +73,8 @@ export class SyncService {
               set: {
                 habitId: item.habit_id,
                 date: item.date,
-                text: item.val_text,
-                value: item.val_bool,
+                text: item.text,
+                value: item.value,
                 updatedAt: new Date(),
               },
             });
@@ -110,36 +110,39 @@ export class SyncService {
       .from(logs)
       .where(and(eq(logs.userId, userId), gt(logs.updatedAt, lastPulledAt)));
 
+      console.log(pulledLogs[1])
+
     return {
       changes: {
         habits: {
           created: [],
-          updated: pulledHabits.filter((h) => !h.deletedAt).map(h => ({
-             id: h.id,
-             user_id: h.userId,
-             category_id: h.categoryId,
-             title: h.title,
-             type: 'BOOLEAN' as const,
-             target_value: 0,
-             frequency_json: h.frequencyJson,
-             updated_at: h.updatedAt.toISOString(),
-             deleted_at: h.deletedAt?.toISOString(),
-          })),
+          updated: pulledHabits
+            .filter((h) => !h.deletedAt)
+            .map((h) => ({
+              id: h.id,
+              user_id: h.userId,
+              category_id: h.categoryId,
+              title: h.title,
+              frequency_json: h.frequencyJson,
+              updated_at: h.updatedAt.toISOString(),
+              deleted_at: h.deletedAt?.toISOString(),
+            })),
           deleted: pulledHabits.filter((h) => h.deletedAt).map((h) => h.id),
         },
         logs: {
           created: [],
-          updated: pulledLogs.filter((l) => !l.deletedAt).map(l => ({
-            id: l.id,
-            habit_id: l.habitId,
-            user_id: l.userId,
-            date: l.date,
-            val_numeric: 0,
-            val_text: l.text || undefined,
-            val_bool: l.value || undefined,
-            updated_at: l.updatedAt.toISOString(),
-            deleted_at: l.deletedAt?.toISOString(),
-          })),
+          updated: pulledLogs
+            .filter((l) => !l.deletedAt)
+            .map((l) => ({
+              id: l.id,
+              habit_id: l.habitId,
+              user_id: l.userId,
+              date: l.date,
+              text: l.text || "",
+              value: l.value || false,
+              updated_at: l.updatedAt.toISOString(),
+              deleted_at: l.deletedAt?.toISOString(),
+            })),
           deleted: pulledLogs.filter((l) => l.deletedAt).map((l) => l.id),
         },
       },

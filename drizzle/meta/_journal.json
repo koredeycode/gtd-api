@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764869872391,
-      "tag": "0000_tense_blacklash",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1764872910611,
-      "tag": "0001_charming_silver_surfer",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1764874515637,
-      "tag": "0002_lucky_eddie_brock",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1764883033274,
-      "tag": "0003_outgoing_tana_nile",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1765051520198,
-      "tag": "0004_tricky_korath",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1765051677988,
-      "tag": "0005_bouncy_meggan",
+      "when": 1765401395819,
+      "tag": "0000_warm_old_lace",
       "breakpoints": true
     }
   ]

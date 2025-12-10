@@ -20,6 +20,7 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api');
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     await app.init();
 
@@ -37,8 +38,13 @@ describe('AppController (e2e)', () => {
 
   it('/auth/register (POST)', async () => {
     const response = await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({ email: 'test@example.com', password: 'password123' })
+      .post('/api/auth/register')
+      .send({
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'John',
+        lastName: 'Doe',
+      })
       .expect(201);
 
     expect(response.body.access_token).toBeDefined();
@@ -49,7 +55,7 @@ describe('AppController (e2e)', () => {
 
   it('/auth/login (POST)', async () => {
     const response = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/api/auth/login')
       .send({ email: 'test@example.com', password: 'password123' })
       .expect(201);
 
@@ -58,17 +64,16 @@ describe('AppController (e2e)', () => {
 
   it('Setup Category', async () => {
     const [cat] = await db.insert(schema.categories).values({
-      userId: userId,
       name: 'Health',
       color: 'red',
     }).returning();
     categoryId = cat.id;
   });
 
-  it('/api/v1/sync (POST) - Push', async () => {
+  it('/api/sync (POST) - Push', async () => {
     const habitId = '123e4567-e89b-12d3-a456-426614174000';
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sync')
+      .post('/api/sync/push')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         last_pulled_at: 0,
@@ -93,9 +98,9 @@ describe('AppController (e2e)', () => {
     expect(response.body.changes).toBeDefined();
   });
 
-  it('/api/v1/sync (POST) - Pull', async () => {
+  it('/api/sync (POST) - Pull', async () => {
     const response = await request(app.getHttpServer())
-      .post('/api/v1/sync')
+      .post('/api/sync/pull')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
         last_pulled_at: 0,
@@ -112,7 +117,7 @@ describe('AppController (e2e)', () => {
 
   it('/analytics/radar (GET)', async () => {
     const response = await request(app.getHttpServer())
-      .get('/analytics/radar')
+      .get('/api/analytics/radar')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(200);
 

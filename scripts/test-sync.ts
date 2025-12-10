@@ -50,9 +50,7 @@ async function testSync() {
             user_id: uuidv4(), 
             category_id: categoryId,
             title: 'Test Habit ' + habitId.substring(0, 8),
-            type: 'BOOLEAN',
             frequency_json: { type: 'daily' },
-            target_value: 0
           }],
           updated: [],
           deleted: []
