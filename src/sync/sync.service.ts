@@ -110,7 +110,7 @@ export class SyncService {
       .from(logs)
       .where(and(eq(logs.userId, userId), gt(logs.updatedAt, lastPulledAt)));
 
-      console.log(pulledLogs[1])
+    console.log(pulledLogs[1]);
 
     return {
       changes: {
@@ -138,7 +138,7 @@ export class SyncService {
               habit_id: l.habitId,
               user_id: l.userId,
               date: l.date,
-              text: l.text || "",
+              text: l.text || '',
               value: l.value || false,
               updated_at: l.updatedAt.toISOString(),
               deleted_at: l.deletedAt?.toISOString(),

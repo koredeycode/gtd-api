@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 
 export class HabitDto {
   @ApiProperty({ example: 'uuid-v4' })
@@ -126,7 +135,10 @@ export class PushInputDto {
 }
 
 export class PullInputDto {
-  @ApiProperty({ example: 1701700000, description: 'Timestamp of last successful pull (seconds)' })
+  @ApiProperty({
+    example: 1701700000,
+    description: 'Timestamp of last successful pull (seconds)',
+  })
   @IsNumber()
   last_pulled_at!: number;
 }
